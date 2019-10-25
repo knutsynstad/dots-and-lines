@@ -3,14 +3,19 @@ import horizontalSymmetry from './criteria/horizontalSymmetry';
 import verticalSymmetry from './criteria/verticalSymmetry';
 import lineCount from './criteria/lineCount';
 
+const criteria = [
+  horizontalSymmetry,
+  verticalSymmetry,
+  lineCount,
+];
+
 class Creature {
   constructor() {
-    this.criteria = [
-      horizontalSymmetry,
-      verticalSymmetry,
-      lineCount,
-    ];
     this.createDNA(40);
+  }
+
+  static getCriteriaCount() {
+    return criteria.length;
   }
 
   setDNA(dna) {
@@ -32,7 +37,7 @@ class Creature {
 
   fitness() {
     let fitness = 0;
-    this.criteria.forEach((criterion) => {
+    criteria.forEach((criterion) => {
       const score = criterion.test(this.DNA);
       fitness += score;
     });

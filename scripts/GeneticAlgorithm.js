@@ -8,7 +8,7 @@ class GeneticAlgorithm {
     this.scores = false;
     this.scoreSum = false;
     this.highScores = [];
-    this.generation = 1;
+    this.generation = 0;
 
     this.populate(Creature);
   }
@@ -55,6 +55,7 @@ class GeneticAlgorithm {
         const newSum = sum + this.scores[i];
         if (value >= sum && value <= newSum) {
           pair.push(this.population[i]);
+          break;
         }
         sum = newSum;
       }
@@ -62,7 +63,7 @@ class GeneticAlgorithm {
     return pair;
   }
 
-  evolve() {
+  evolve(mode) {
     const children = [];
     while (children.length < this.populationSize) {
       const [parentA, parentB] = this.selectPair();
@@ -70,12 +71,37 @@ class GeneticAlgorithm {
       child.mutate(this.mutationRate);
       children.push(child);
     }
-    this.population = children;
 
+    this.population = children;
     this.generation += 1;
     this.scoreFitness();
 
+    if (mode.snapshot) {
+      return this.snapshot();
+    }
+    return true;
+  }
+
+  start(mode) {
+    if (mode.epochs) {
+      while (this.generation < mode.epochs) {
+        this.evolve({ snapshot: false });
+      }
+    }
+    if (mode.threshold) {
+      while (Math.max(...this.highScores) < mode.threshold) {
+        this.evolve({ snapshot: false });
+      }
+    }
+
     return this.snapshot();
+  }
+
+  getRankedCreatures(quantity) {
+    let creatures = this.population;
+    creatures.sort((a, b) => a.fitness - b.fitness);
+    creatures = creatures.slice(-quantity);
+    return creatures;
   }
 
   export() {

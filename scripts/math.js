@@ -1,5 +1,5 @@
 const randomNumberBetween = (min, max) => {
-  let value = Math.random() * (max - min) + min;
+  const value = Math.random() * (max - min) + min;
   return value;
 };
 
