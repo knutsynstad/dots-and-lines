@@ -43,7 +43,7 @@ const lineCoordinates = [
   [60, 48, 60, 60],
 ];
 
-const render = (population, filename, width, height) => {
+const renderGrid = (population, filename, width, height) => {
   const quantity = width * height;
   let selection = population;
   selection.sort((a, b) => a.fitness - b.fitness);
@@ -59,7 +59,7 @@ const render = (population, filename, width, height) => {
   }
 
   selection.forEach((creatureWrapper, creatureIndex) => {
-    const creature = creatureWrapper[0];
+    const creature = creatureWrapper;
     const x = (creatureIndex % width) * 72;
     const y = Math.floor(creatureIndex / width) * 72;
 
@@ -111,4 +111,4 @@ const render = (population, filename, width, height) => {
   fs.writeFileSync(`${filename}.svg`, svg);
 };
 
-module.exports = render;
+module.exports = renderGrid;

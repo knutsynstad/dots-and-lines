@@ -82,7 +82,7 @@ class GeneticAlgorithm {
     return true;
   }
 
-  start(mode) {
+  runUntil(mode) {
     if (mode.epochs) {
       while (this.generation < mode.epochs) {
         this.evolve({ snapshot: false });
@@ -97,7 +97,7 @@ class GeneticAlgorithm {
     return this.snapshot();
   }
 
-  getRankedCreatures(quantity) {
+  getTop(quantity) {
     let creatures = this.population;
     creatures.sort((a, b) => a.fitness - b.fitness);
     creatures = creatures.slice(-quantity);

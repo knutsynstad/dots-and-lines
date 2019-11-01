@@ -1,26 +1,25 @@
 import GeneticAlgorithm from './scripts/GeneticAlgorithm';
 import Creature from './scripts/Creature';
-import render from './scripts/renderer';
+import renderGrid from './scripts/renderer';
 
-const width = 5;
-const height = 3;
+const cols = 3;
+const rows = 3;
 const options = {
   populationSize: 200,
   mutationRate: 0.0005,
 };
 const output = [];
-const filename = 'solutions';
 
-for (let i = 0; i < width * height; i += 1) {
+for (let i = 0; i < cols * rows; i += 1) {
   const ga = new GeneticAlgorithm(Creature, options);
   const threshold = Creature.getCriteriaCount();
-  ga.start({ threshold });
-  // ga.start({ epochs: 500 });
 
-  const creature = ga.getRankedCreatures(1);
-  output.push(creature);
+  ga.runUntil({ threshold });
+  // ga.run({ epochs: 500 });
 
+  const selection = ga.getTop(1);
+  output.push(...selection);
   console.log(`Solution ${i + 1} after ${ga.generation} generations`);
 }
 
-render(output, `./output/${filename}`, width, height);
+renderGrid(output, './output/solutions', cols, rows);
