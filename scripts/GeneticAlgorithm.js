@@ -5,9 +5,10 @@ class GeneticAlgorithm {
     this.populationSize = options.populationSize;
     this.mutationRate = options.mutationRate;
     this.population = [];
-    this.scores = false;
-    this.scoreSum = false;
+    this.scores = 0;
+    this.scoreSum = 0;
     this.highScores = [];
+    this.highScore = 0;
     this.generation = 0;
 
     this.populate(Creature);
@@ -19,31 +20,27 @@ class GeneticAlgorithm {
       this.population.push(creature);
     }
     this.scoreFitness();
-    return this.snapshot();
-  }
-
-  snapshot() {
-    const report = {
-      generation: this.generation,
-      scoreSum: this.scoreSum,
-      scores: this.scores,
-      highScores: this.highScores,
-    };
-
-    return report;
   }
 
   scoreFitness() {
     this.scores = [];
     this.scoreSum = 0;
+    let bestScore = 0;
 
-    this.population.forEach((creature) => {
+    for (let i = 0; i < this.populationSize; i += 1) {
+      const creature = this.population[i];
       const fitness = creature.fitness();
       this.scores.push(fitness);
       this.scoreSum += fitness;
-    });
-    const topScore = Math.max(...this.scores);
-    this.highScores.push(topScore);
+
+      if (fitness > this.highScore) {
+        this.highScore = fitness;
+      }
+      if (fitness > bestScore) {
+        bestScore = fitness;
+      }
+    }
+    this.highScores.push(bestScore);
   }
 
   selectPair() {
@@ -63,7 +60,7 @@ class GeneticAlgorithm {
     return pair;
   }
 
-  evolve(mode) {
+  evolve() {
     const children = [];
     while (children.length < this.populationSize) {
       const [parentA, parentB] = this.selectPair();
@@ -75,40 +72,20 @@ class GeneticAlgorithm {
     this.population = children;
     this.generation += 1;
     this.scoreFitness();
-
-    if (mode.snapshot) {
-      return this.snapshot();
-    }
-    return true;
   }
 
-  runUntil(mode) {
-    if (mode.epochs) {
-      while (this.generation < mode.epochs) {
-        this.evolve({ snapshot: false });
-      }
+  runUntil(threshold) {
+    while (this.highScore < threshold) {
+      this.evolve();
     }
-    if (mode.threshold) {
-      while (Math.max(...this.highScores) < mode.threshold) {
-        this.evolve({ snapshot: false });
-      }
-    }
-
-    return this.snapshot();
   }
 
   getTop(quantity) {
     let creatures = this.population;
     creatures.sort((a, b) => a.fitness - b.fitness);
     creatures = creatures.slice(-quantity);
+    creatures = creatures.reverse();
     return creatures;
-  }
-
-  export() {
-    const snapshot = this.snapshot();
-    snapshot.populationSize = this.populationSize;
-    snapshot.population = this.population;
-    return snapshot;
   }
 }
 

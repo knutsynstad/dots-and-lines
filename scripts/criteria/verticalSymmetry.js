@@ -18,7 +18,6 @@ module.exports = {
         }
       }
     }
-
     const averageScore = score / matches;
     return averageScore;
   },

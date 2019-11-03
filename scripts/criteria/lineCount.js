@@ -3,12 +3,11 @@ module.exports = {
   test: (dna) => {
     const desiredNumberOfLines = 20;
     let lines = 0;
-    dna.forEach((genotype) => {
-      if (genotype) {
+    for (let i = 0; i < dna.length; i += 1) {
+      if (dna[i]) {
         lines += 1;
       }
-    });
-
+    }
     let score = 1;
     let delta = Math.abs(desiredNumberOfLines - lines);
     while (delta > 0) {

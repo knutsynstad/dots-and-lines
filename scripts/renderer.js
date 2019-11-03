@@ -44,24 +44,20 @@ const lineCoordinates = [
 ];
 
 const renderGrid = (population, filename, width, height) => {
-  const quantity = width * height;
-  let selection = population;
-  selection.sort((a, b) => a.fitness - b.fitness);
-  selection = selection.slice(-quantity);
-  selection = selection.reverse();
-
+  const count = width * height;
+  const dnaLength = population[0].DNA.length;
   let svg = '';
-  if (selection.length > 1) {
+  if (count > 1) {
     const size = 72;
     const w = width * size;
     const h = height * size;
     svg += `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}px" height="${h}px" viewBox="0 0 ${w} ${h}">\n`;
   }
 
-  selection.forEach((creatureWrapper, creatureIndex) => {
-    const creature = creatureWrapper;
-    const x = (creatureIndex % width) * 72;
-    const y = Math.floor(creatureIndex / width) * 72;
+  for (let i = 0; i < count; i += 1) {
+    const creature = population[i];
+    const x = (i % width) * 72;
+    const y = Math.floor(i / width) * 72;
 
     svg += `<svg x="${x}" y="${y}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="72px" height="72px" viewBox="0 0 72 72">
     <g class="dots" fill="#ec008b">
@@ -91,24 +87,24 @@ const renderGrid = (population, filename, width, height) => {
       <circle cx="48" cy="60" r="1.5"/>
       <circle cx="60" cy="60" r="1.5"/>
     </g>
-    <g class="lines" fill="none" stroke="black" stroke-width="3" stroke-linecap="round">
-  `;
+    <g class="lines" fill="none" stroke="black" stroke-width="3" stroke-linecap="round">\n`;
 
-    creature.DNA.forEach((genotype, index) => {
+    for (let j = 0; j < dnaLength; j += 1) {
+      const genotype = creature.DNA[j];
       if (genotype) {
-        const [x1, y1, x2, y2] = lineCoordinates[index];
-        svg += `    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>\n`;
+        const [x1, y1, x2, y2] = lineCoordinates[j];
+        svg += `      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>\n`;
       }
-    });
+    }
 
     svg += '  </g>\n  </svg>';
-  });
+  }
 
-  if (selection.length > 1) {
+  if (count > 1) {
     svg += '</svg>';
   }
 
-  fs.writeFileSync(`${filename}.svg`, svg);
+  fs.writeFileSync(filename, svg);
 };
 
 module.exports = renderGrid;

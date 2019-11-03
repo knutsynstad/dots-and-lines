@@ -2,24 +2,22 @@ import GeneticAlgorithm from './scripts/GeneticAlgorithm';
 import Creature from './scripts/Creature';
 import renderGrid from './scripts/renderer';
 
-const cols = 3;
+const columns = 3;
 const rows = 3;
+const count = columns * rows;
 const options = {
   populationSize: 200,
   mutationRate: 0.0005,
 };
-const output = [];
+const threshold = Creature.getCriteriaCount();
+const solutions = [];
 
-for (let i = 0; i < cols * rows; i += 1) {
+for (let i = 0; i < count; i += 1) {
   const ga = new GeneticAlgorithm(Creature, options);
-  const threshold = Creature.getCriteriaCount();
-
-  ga.runUntil({ threshold });
-  // ga.run({ epochs: 500 });
-
+  ga.runUntil(threshold);
   const selection = ga.getTop(1);
-  output.push(...selection);
+  solutions.push(selection[0]);
   console.log(`Solution ${i + 1} after ${ga.generation} generations`);
 }
 
-renderGrid(output, './output/solutions', cols, rows);
+renderGrid(solutions, './output/solutions.svg', columns, rows);

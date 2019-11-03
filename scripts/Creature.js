@@ -10,63 +10,58 @@ const criteria = [
 ];
 
 class Creature {
-  constructor() {
-    this.createDNA(40);
+  constructor(dna) {
+    this.dnaLength = 40;
+    if (dna) {
+      this.DNA = dna;
+    } else {
+      this.createDNA();
+    }
   }
 
   static getCriteriaCount() {
     return criteria.length;
   }
 
-  setDNA(dna) {
-    this.DNA = dna;
-  }
-
-  createDNA(length) {
+  createDNA() {
     const dna = [];
-    for (let i = 0; i < length; i += 1) {
+    for (let i = 0; i < this.dnaLength; i += 1) {
       const random = Math.random();
-      if (random < 0.33) {
-        dna.push(true);
-      } else {
-        dna.push(false);
-      }
+      dna.push(random < 0.5);
     }
-    this.setDNA(dna);
+    this.DNA = dna;
   }
 
   fitness() {
     let fitness = 0;
-    criteria.forEach((criterion) => {
-      const score = criterion.test(this.DNA);
+    for (let i = 0; i < criteria.length; i += 1) {
+      const score = criteria[i].test(this.DNA);
       fitness += score;
-    });
+    }
     this.fitness = fitness;
     return fitness;
   }
 
   mutate(mutationRate) {
-    this.DNA.forEach((genotype, index) => {
+    for (let i = 0; i < this.dnaLength; i += 1) {
       const random = Math.random();
       if (random <= mutationRate) {
-        this.DNA[index] = !genotype;
+        this.DNA[i] = !this.DNA[i];
       }
-    });
+    }
   }
 
   crossover(partner) {
-    const { length } = this.DNA;
-    const crossoverPoint = randomNumberBetween(0, length);
-    const child = new Creature();
+    const crossoverPoint = randomNumberBetween(0, this.dnaLength);
     const DNA = [];
-    for (let i = 0; i < length; i += 1) {
+    for (let i = 0; i < this.dnaLength; i += 1) {
       if (i <= crossoverPoint) {
         DNA.push(this.DNA[i]);
       } else {
         DNA.push(partner.DNA[i]);
       }
     }
-    child.setDNA(DNA);
+    const child = new Creature(DNA);
     return child;
   }
 }
