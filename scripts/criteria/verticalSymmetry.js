@@ -1,24 +1,37 @@
-import grid from './grid';
+import { getCoords, getIndex } from '../math';
 
 module.exports = {
   name: 'Vertical Symmetry',
-  test: (dna) => {
-    const { length } = grid;
-    let matches = 0;
+  test: (dna, length, size) => {
+    let lines = 0;
     let score = 0;
-    for (let y = 0; y < length; y += 1) {
-      for (let x = 0; x < length; x += 1) {
-        const current = grid[x][y];
-        const match = grid[length - 1 - x][y];
-        if (current && match) {
-          matches += 1;
-          if (dna[current] === dna[match]) {
-            score += 1;
-          }
+
+    // Iterate over dna array
+    for (let i = 0; i < length; i += 1) {
+      if (dna[i]) {
+        lines += 1;
+        // For each genotype, get coordinates
+        const [x, y1] = getCoords(i, size);
+        let match;
+
+        // Find symmetry point
+        if (i < length / 2) {
+          // Horizontal lines
+          const y2 = size - 1 - y1;
+          match = getIndex(x, y2, size, 'horizontal');
+        } else {
+          // Vertical lines
+          const y2 = size - 2 - y1;
+          match = getIndex(x, y2, size, 'vertical');
+        }
+
+        if (dna[i] && dna[match]) {
+          score += 1;
         }
       }
     }
-    const averageScore = score / matches;
+
+    const averageScore = score / lines;
     return averageScore;
   },
 };

@@ -1,8 +1,9 @@
-import randomNumberBetween from './math';
+import { randomNumberBetween } from './math';
 import horizontalSymmetry from './criteria/horizontalSymmetry';
 import verticalSymmetry from './criteria/verticalSymmetry';
 import lineCount from './criteria/lineCount';
 
+const size = 5;
 const criteria = [
   horizontalSymmetry,
   verticalSymmetry,
@@ -11,7 +12,7 @@ const criteria = [
 
 class Creature {
   constructor(dna) {
-    this.dnaLength = 40;
+    this.dnaLength = 2 * (size ** 2 - size);
     if (dna) {
       this.DNA = dna;
     } else {
@@ -21,6 +22,10 @@ class Creature {
 
   static getCriteriaCount() {
     return criteria.length;
+  }
+
+  static getSize() {
+    return size;
   }
 
   createDNA() {
@@ -35,7 +40,7 @@ class Creature {
   fitness() {
     let fitness = 0;
     for (let i = 0; i < criteria.length; i += 1) {
-      const score = criteria[i].test(this.DNA);
+      const score = criteria[i].test(this.DNA, this.dnaLength, size);
       fitness += score;
     }
     this.fitness = fitness;

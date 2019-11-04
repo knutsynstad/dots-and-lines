@@ -1,4 +1,4 @@
-import randomNumberBetween from './math';
+import { randomNumberBetween } from './math';
 
 class GeneticAlgorithm {
   constructor(Creature, options) {
