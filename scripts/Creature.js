@@ -37,14 +37,14 @@ class Creature {
     this.DNA = dna;
   }
 
-  fitness() {
+  getFitness() {
     let fitness = 0;
     for (let i = 0; i < criteria.length; i += 1) {
       const score = criteria[i].test(this.DNA, this.dnaLength, size);
       fitness += score;
     }
     this.fitness = fitness;
-    return fitness;
+    return this.fitness;
   }
 
   mutate(mutationRate) {

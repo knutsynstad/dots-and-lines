@@ -6,8 +6,9 @@ const columns = 3;
 const rows = 3;
 
 const options = {
-  populationSize: 400,
+  populationSize: 200,
   mutationRate: 0.0005,
+  elitistSelection: 2,
 };
 
 const count = columns * rows;

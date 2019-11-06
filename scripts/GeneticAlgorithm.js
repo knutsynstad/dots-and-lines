@@ -4,10 +4,10 @@ class GeneticAlgorithm {
   constructor(Creature, options) {
     this.populationSize = options.populationSize;
     this.mutationRate = options.mutationRate;
+    this.elitistSelection = options.elitistSelection;
     this.population = [];
     this.scores = 0;
     this.scoreSum = 0;
-    this.highScores = [];
     this.highScore = 0;
     this.generation = 0;
 
@@ -25,22 +25,17 @@ class GeneticAlgorithm {
   scoreFitness() {
     this.scores = [];
     this.scoreSum = 0;
-    let bestScore = 0;
 
     for (let i = 0; i < this.populationSize; i += 1) {
       const creature = this.population[i];
-      const fitness = creature.fitness();
+      const fitness = creature.getFitness();
       this.scores.push(fitness);
       this.scoreSum += fitness;
 
       if (fitness > this.highScore) {
         this.highScore = fitness;
       }
-      if (fitness > bestScore) {
-        bestScore = fitness;
-      }
     }
-    this.highScores.push(bestScore);
   }
 
   selectPair() {
@@ -60,16 +55,28 @@ class GeneticAlgorithm {
     return pair;
   }
 
+  sortPopulation() {
+    this.population.sort((a, b) => b.fitness - a.fitness);
+    this.scores.sort((a, b) => b - a);
+  }
+
   evolve() {
-    const children = [];
-    while (children.length < this.populationSize) {
+    const newGeneration = [];
+
+    if (this.elitistSelection && this.elitistSelection > 0) {
+      this.sortPopulation();
+      const elites = this.population.slice(0, this.elitistSelection);
+      newGeneration.push(...elites);
+    }
+
+    while (newGeneration.length < this.populationSize) {
       const [parentA, parentB] = this.selectPair();
       const child = parentA.crossover(parentB);
       child.mutate(this.mutationRate);
-      children.push(child);
+      newGeneration.push(child);
     }
 
-    this.population = children;
+    this.population = newGeneration;
     this.generation += 1;
     this.scoreFitness();
   }
@@ -81,11 +88,9 @@ class GeneticAlgorithm {
   }
 
   getTop(quantity) {
-    let creatures = this.population;
-    creatures.sort((a, b) => a.fitness - b.fitness);
-    creatures = creatures.slice(-quantity);
-    creatures = creatures.reverse();
-    return creatures;
+    this.sortPopulation();
+    const selection = this.population.slice(0, quantity);
+    return selection;
   }
 }
 
